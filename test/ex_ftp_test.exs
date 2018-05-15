@@ -21,6 +21,12 @@ defmodule FtpTest do
       ExFtp.parse_ls_line("drwxr-xr-x   49 1000       ftpgroup         1666 Jan 11 10:02 TMBJJ9NE3E0068343")
   end
 
+  test "parse_ls_line for Windows name" do
+    %{name: "TMBJJ9NE3E0068343 TMBJM6NJ2GZ103942"} = ExFtp.parse_ls_line(String.trim("""
+      drwxr-xr-x   49 1000       ftpgroup         1666 Jan 11 10:02 TMBJJ9NE3E0068343 TMBJM6NJ2GZ103942
+      """))
+  end
+
   test "parse_ls_line for directory" do
     %{type: :directory} =
       ExFtp.parse_ls_line("drwxr-xr-x   49 1000       ftpgroup         1666 Jan 11 10:02 TMBJJ9NE3E0068343")

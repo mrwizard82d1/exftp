@@ -186,9 +186,15 @@ defmodule ExFtp do
   end
 
   def parse_ls_line(line) do
-    ~r/([di-])[rwx-]{9,9}.+ (.+)/
-    |> Regex.run(line)
-    |> parse_ls_line(line)
+    # Splitting the line returned by the FTP LIST command on whitespace seems to work on both the existing test data
+    # and on my (slightly different) test data. Unfortunately, the output of the FTP LIST command is implementation-
+    # dependent (see https://stackoverflow.com/questions/11553953/ftp-ls-lt-command-how-does-it-list-the-file-details
+    # -for-linux-ftp-and-window and http://cr.yp.to/ftp/list.html). Consequently, I am not very confident that this
+    # solution is robust across FTP server implementations.
+    case String.split(line, ~r/\s+/, parts: 9) do
+      [type_perms, _, _, _, _, _, _, _, name] -> parse_ls_line([line, String.at(type_perms, 0), name], line)
+      :true -> parse_ls_line(nil, line)
+    end
   end
   def parse_ls_line([_all, type, name], _line) do
     %{
