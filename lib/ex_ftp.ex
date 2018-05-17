@@ -37,7 +37,8 @@ defmodule ExFtp do
   returns the current working directory
   """
   def pwd({:ftp, pid}) do
-    :ftp.pwd(pid) |> List.to_string
+    {:ok, path} = :ftp.pwd(pid)
+    path |> List.to_string
   end
   def pwd({:sftp, _, _}) do
     raise "pwd for sftp not implemented"
